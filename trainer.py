@@ -55,7 +55,7 @@ class UNetTrainer():
             lossi = []
             preLoss = []
             if( i % 5 == 0):
-                print('----------------------------- epoch : ', i,' ---------------------------')
+                print('----------------------------- epoch : ', i, ' ---------------------------')
             for data in self.dataloader:
                 iter_ += 1
                 self.optimizer.zero_grad()
@@ -91,10 +91,16 @@ class UNetTrainer():
                             if loss > maxgrad:
                                 maxgrad = loss
                                 idx = lit
+                        elif self.cfg.version == 3:
+                            if len(preLoss) != 0:
+                                lossChange = (loss - preLoss[lit]) / preLoss[lit]
+                            if (len(preLoss) == 0 or abs(lossChange) > maxgrad):
+                                maxgrad = abs(lossChange)
+                                idx = lit
                         lossi.append(loss.item())
                     preLoss = lossi
-                    if iter_ % self.cfg.display_freq== 0:
-                        loss_record.append(lossi)
+                    if iter_ % self.cfg.display_freq == 0:
+                        loss_record.append([lossi, idx])
                     self.loss_function.bulid_loss(str(idx))
                 else:
                     self.loss_function.bulid_loss(loss_name)
@@ -116,12 +122,14 @@ class UNetTrainer():
             loss_average = loss_count/num_count
             print('epoch: {} | loss: {:.7f}'.format(i, loss_average), flush=True)
             file_name = 'iter_{}.pth'.format(iter_)
-            torch.save(self.model.state_dict(), os.path.join(self.cfg.job_path, loss_name, file_name))
-            print('save {} over!'.format(file_name))
+            save_path = os.path.join(self.cfg.job_path, loss_name, file_name)
+            torch.save(self.model.state_dict(), save_path)
+            print('save {} over!'.format(save_path))
         
         file_name = 'iter_{}.pth'.format(iter_)
-        torch.save(self.model.state_dict(), os.path.join(self.cfg.job_path, loss_name, file_name))
-        print('save {} over!'.format(file_name))
+        save_path = os.path.join(self.cfg.job_path, loss_name, file_name)
+        torch.save(self.model.state_dict(), save_path)
+        print('save {} over!'.format(save_path))
 
         loss_record = npy.array(loss_record)
         print(loss_record.shape)

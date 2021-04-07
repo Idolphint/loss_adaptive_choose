@@ -144,6 +144,10 @@ class MultiLosses(object):
         minp = torch.min(data)
         nor_data = (data - minp) / (maxp - minp)
         return nor_data
+    def softlabel(self, label, epsilon=0.1):
+        newlabel = label*(1-epsilon) + epsilon/cfg.class_num
+
+        return newlabel
 
     def softFMeasure(self, logit, target, beta=1):
 
@@ -151,10 +155,10 @@ class MultiLosses(object):
         # target = target.contiguous().view(-1)
         logit_nor = self.normalData(logit)
         OHtarget = self.toOneHot(target, class_num=cfg.class_num)
-
-        zh_target = OHtarget[:,0,:,:]
+        newlabel = self.softlabel(OHtarget)
+        zh_target = newlabel[:,0,:,:]
         zh_logit = logit_nor[:,0,:,:]
-        re_target = OHtarget[:,1,:,:]
+        re_target = newlabel[:,1,:,:]
         re_logit = logit_nor[:,1,:,:]
 
         TP = torch.sum(zh_logit * zh_target)
@@ -162,7 +166,7 @@ class MultiLosses(object):
         FN = torch.sum(re_logit * zh_target)
 
         FM_b = ((1+beta*beta)*TP) / ( (1+beta*beta)*TP + beta*beta*FN + FP)
-        loss = 1. - FM_b
+        loss = 1.0 - FM_b
 
         return loss
 

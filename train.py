@@ -39,7 +39,7 @@ if __name__ == '__main__':
         cfg = cfg
     )
     #loss_list = ['L2', 'ce', 'focal', 'dice', 'Fscore']
-    loss_list = ['ce']
+    loss_list = ['Fscore']
     for lossi in loss_list:
         print("======================using loss: {} =========================\n".format(lossi))
         try:

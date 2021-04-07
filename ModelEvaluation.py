@@ -46,6 +46,7 @@ def getDNWmat(ckptdir, lossname):
         #     break
         Evares.append( [ ] )
         checkpoint = os.path.join(ckptdir, 'iter_' + str( listnum[i] ) + '.pth')
+
         print(checkpoint)
         model.load_state_dict( torch.load( checkpoint ) )
         model.eval()
@@ -78,7 +79,7 @@ def getDNWmat(ckptdir, lossname):
 
 
 # loss_name = ['', 'L2', 'ce', 'focal', 'dice', 'v1']
-loss_name = ['Fscore']
+loss_name = ['v3']
 for lossi in loss_name:
     print("====================test "+lossi+" ======================")
     ckptlittledir = os.path.join(checkpointdir, lossi)
