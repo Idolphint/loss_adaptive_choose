@@ -2,4 +2,5 @@
 *.pth
 /jobs
 /res
-
+/matlab
+/res_fig
