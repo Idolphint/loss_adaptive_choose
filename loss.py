@@ -97,7 +97,7 @@ class MultiLosses(object):
 
         #logpt *= alpha
 
-        loss = -((1-pt) ** gamma) *logpt
+        loss = -((1-pt) ** gamma) * logpt
 
 
         return loss
@@ -129,7 +129,7 @@ class MultiLosses(object):
         dice = (2. * intersection + smooth) / (torch.sum(target * target) +
          torch.sum(logit * logit) + smooth)
 
-        return (1. - dice)
+        return (1. - dice)*10
         
     def MultiClassDiceloss(self, logit, target):
         n, c, w, h = logit.size()
@@ -149,13 +149,14 @@ class MultiLosses(object):
 
         return newlabel
 
-    def softFMeasure(self, logit, target, beta=1):
+    def softFMeasure(self, logit, target, beta=1.0):
 
         # logit = logit.contiguous().view(-1)
         # target = target.contiguous().view(-1)
         logit_nor = self.normalData(logit)
         OHtarget = self.toOneHot(target, class_num=cfg.class_num)
         newlabel = self.softlabel(OHtarget)
+
         zh_target = newlabel[:,0,:,:]
         zh_logit = logit_nor[:,0,:,:]
         re_target = newlabel[:,1,:,:]
@@ -166,7 +167,7 @@ class MultiLosses(object):
         FN = torch.sum(re_logit * zh_target)
 
         FM_b = ((1+beta*beta)*TP) / ( (1+beta*beta)*TP + beta*beta*FN + FP)
-        loss = 1.0 - FM_b
+        loss = (1.0 - FM_b) * 30
 
         return loss
 

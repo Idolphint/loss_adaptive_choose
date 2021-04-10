@@ -22,9 +22,9 @@ class UNetDataset(Dataset):
         print('Dataset')
         cfg = TrainOptions().parse()
         sheet_train = "TrainSliceIndex0607.xlsx"
-        sheet_test = "SelVolum0604.xlsx"
+        sheet_test = "TrainSliceIndex0607.xlsx"
         train_s = 0
-        test_s = 0
+        test_s = 2
 
         sheet_name = sheet_train
         s = train_s

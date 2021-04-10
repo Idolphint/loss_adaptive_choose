@@ -1,0 +1,5 @@
+# it is a comment
+*.pth
+/jobs
+/res
+

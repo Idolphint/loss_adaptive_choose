@@ -2,6 +2,7 @@ import torch
 from torch import optim
 import torch.nn as nn
 from unet import UNet
+from torch.autograd import Variable
 import os
 import numpy as npy
 import scipy.io as scio
@@ -62,12 +63,17 @@ class UNetTrainer():
                 imgs, true_masks = data
 
                 imgs = imgs.to(self.device)
+                imgs.requires_grad_()
+                print(imgs.requires_grad)
                 true_masks = true_masks.to(self.device)
 
                 masks_pred = self.model(imgs)
                 if(masks_pred.is_cuda==False):
                     masks_pred = masks_pred.to(self.device)
-
+                # masks_pred.retain_grad()
+                # masks_pred = Variable(masks_pred, requires_grad=True)
+                # # 0.4以后variable已经和tensor合并，叶子只需要tensor.requires_grad_()
+                # 即可设置为求导，非叶子节点，需要tensor.retain_grad()
                 # n1,c1,w1,h1 = masks_pred.shape
                 # n2,w2,h2 = true_masks.shape
                 # ##### ----------------------- Loss ----------------------
@@ -107,6 +113,7 @@ class UNetTrainer():
                 loss = self.loss_function.loss(masks_pred, true_masks)
                 
                 loss.backward()
+                # print(imgs.grad)
                 self.optimizer.step()
 
                 loss_count = loss_count + loss.item()
