@@ -2,7 +2,6 @@ import torch
 from torch import optim
 import torch.nn as nn
 from unet import UNet
-from torch.autograd import Variable
 import os
 import numpy as npy
 import scipy.io as scio
@@ -63,8 +62,6 @@ class UNetTrainer():
                 imgs, true_masks = data
 
                 imgs = imgs.to(self.device)
-                imgs.requires_grad_()
-                print(imgs.requires_grad)
                 true_masks = true_masks.to(self.device)
 
                 masks_pred = self.model(imgs)
@@ -113,8 +110,8 @@ class UNetTrainer():
                 loss = self.loss_function.loss(masks_pred, true_masks)
                 
                 loss.backward()
-                # print(imgs.grad)
                 self.optimizer.step()
+                self.printParamater()
 
                 loss_count = loss_count + loss.item()
                 num_count = num_count + 1
@@ -143,3 +140,19 @@ class UNetTrainer():
         scio.savemat("./lossRecord-{}.mat".format(loss_name), mdict ={'data': loss_record})
 
 
+    def printParamater(self):
+        #设计一个全局的mask，每次响应mask都相加，最后取1/4的最大值，存为mat
+        target_layer_list = ["up4", "outc"]
+        for name, para in self.model.named_parameters():
+            out_layer_name = name.split(".")[0]
+            if para.requires_grad and out_layer_name in target_layer_list:
+                grad = para.grad
+                grad_max, grad_min = torch.max(torch.abs(grad)), torch.min(torch.abs(grad))
+                #print(name, ":  yes!", grad_max)
+                thre = 3/4*grad_max + 1/4*grad_min
+                tar_idx = torch.gt(grad, thre)
+                mask = torch.empty(para.size())
+                mask[tar_idx] = 1
+                mask = mask.to(self.device)
+                para_after_mask = mask * para
+                print(para_after_mask)

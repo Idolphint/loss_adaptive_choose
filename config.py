@@ -21,7 +21,7 @@ class TrainOptions:
         parser.add_argument('--use_strategy', action='store_true')
         parser.add_argument('--checkpoint_dir', type=str, default='./jobs')
         parser.add_argument('--phase', type=str, default='train', choices=['train', 'test'])
-        parser.add_argument('--num_workers', type=int, default=0)
+        parser.add_argument('--num_workers', type=int, default=2)
         parser.add_argument('--device', type=str, default='cuda:2')
         parser.add_argument('--split_train_Dataset_path', type=str, default='/home/yangtingyang/LTT/DenseNet/splitRecord.txt')
         parser.add_argument('--split_test_Dataset_path', type=str, default='/home/yangtingyang/LTT/DenseNet/splitRecord2.txt')

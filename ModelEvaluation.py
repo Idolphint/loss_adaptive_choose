@@ -79,8 +79,8 @@ def getDNWmat(ckptdir, lossname):
 
 
 
-# loss_name = ['', 'L2', 'ce', 'focal', 'dice', 'v1']
-loss_name = ['Fscore']
+loss_name = ['v3', 'L2', 'focal', 'dice', 'v1']
+#loss_name = ['v1']
 for lossi in loss_name:
     print("====================test "+lossi+" ======================")
     ckptlittledir = os.path.join(checkpointdir, lossi)

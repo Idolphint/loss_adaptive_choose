@@ -167,7 +167,7 @@ class MultiLosses(object):
         FN = torch.sum(re_logit * zh_target)
 
         FM_b = ((1+beta*beta)*TP) / ( (1+beta*beta)*TP + beta*beta*FN + FP)
-        loss = (1.0 - FM_b) * 30
+        loss = (1.0 - FM_b) * 50
 
         return loss
 
